@@ -41,16 +41,28 @@ def llm_function(chat: ChatSession, query):
         }
     )
 
+    # Update chat history
+    chat.history.append(Content(role="user", parts=[Part.from_text(query)]))
+    chat.history.append(Content(role="model", parts=[Part.from_text(output)]))
+
 st.title("Gemini Explorer")
 
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Debugging: Print chat history
-st.write("Chat history:", st.session_state.messages)
+# Display and load chat history
+for index, message in enumerate(st.session_state.messages):
+    content = Content(
+        role=message["role"],
+        parts=[Part.from_text(message["content"])]
+    )
+    chat.history.append(content)
 
-# Ensure chat starts with a HumanMessage
+# Debugging: Print chat history
+st.write("Chat history before user input:", st.session_state.messages)
+
+# For initial message startup
 if len(st.session_state.messages) == 0:
     initial_message = "Welcome to Gemini Explorer! How can I assist you today?"
 
