@@ -47,32 +47,22 @@ st.title("Gemini Explorer")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display and load chat history
-for index, message in enumerate(st.session_state.messages):
-    content = Content(
-        role=message["role"],
-        parts=[Part.from_text(message["content"])]
-    )
+# Debugging: Print chat history
+st.write("Chat history:", st.session_state.messages)
 
-    if index != 0:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
-    chat.history.append(content)
-
-# For initial message startup
+# Ensure chat starts with a HumanMessage
 if len(st.session_state.messages) == 0:
     initial_message = "Welcome to Gemini Explorer! How can I assist you today?"
 
-    # Append the initial message as a model message
+    # Append the initial message as a user message
     st.session_state.messages.append(
         {
-            "role": "model",
+            "role": "user",  # Start with a user message
             "content": initial_message
         }
     )
     
-    content = Content(role="model", parts=[Part.from_text(initial_message)])
+    content = Content(role="user", parts=[Part.from_text(initial_message)])
     chat.history.append(content)
     with st.spinner(text="Processing..."):
         llm_function(chat, initial_message)
@@ -91,16 +81,19 @@ user_name = st.text_input("Please enter your name")
 # Implement Personalized Greetings
 if user_name:
     personalized_greeting = f"Hello {user_name}! How can I assist you today?"
-    
-    # Append the personalized greeting as a model message
+
+    # Append the personalized greeting as a user message
     st.session_state.messages.append(
         {
-            "role": "model",
+            "role": "user",
             "content": personalized_greeting
         }
     )
     
-    content = Content(role="model", parts=[Part.from_text(personalized_greeting)])
+    content = Content(role="user", parts=[Part.from_text(personalized_greeting)])
     chat.history.append(content)
     with st.spinner(text="Processing..."):
         llm_function(chat, personalized_greeting)
+
+# Debugging: Print final chat history
+st.write("Final chat history:", st.session_state.messages)
